@@ -1,0 +1,71 @@
+{
+  "name": "@dpassarelli/topical-pubsub",
+  "version": "1.0.0",
+  "description": "JS pub/sub implementation that only allows for specific topics to be used.",
+  "main": "index.js",
+  "scripts": {
+    "cover:test": "nyc npm run test:unit",
+    "cover:report": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "standard",
+    "test:unit": "mocha *.spec.js",
+    "test": "npm run lint && npm run cover:test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DPassarelli/topical-pubsub.git"
+  },
+  "keywords": [
+    "pubsub",
+    "topic"
+  ],
+  "author": "David Passarelli <dpassarelli@camelotcg.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DPassarelli/topical-pubsub/issues"
+  },
+  "homepage": "https://github.com/DPassarelli/topical-pubsub#readme",
+  "mocha": {
+    "reporter": "min",
+    "ui": "bdd"
+  },
+  "standard": {
+    "global": [
+      "expect"
+    ]
+  },
+  "nyc": {
+    "check-coverage": true,
+    "exclude": [
+      "**/*.spec.js",
+      "test/"
+    ],
+    "per-file": true,
+    "lines": [
+      85,
+      92
+    ],
+    "statements": [
+      85,
+      92
+    ],
+    "functions": [
+      85,
+      92
+    ],
+    "branches": [
+      85,
+      92
+    ]
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.1.3",
+    "nyc": "^15.1.0",
+    "standard": "^14.3.4",
+    "ulid": "^2.3.0"
+  },
+  "dependencies": {
+    "debug": "^4.2.0",
+    "mitt": "^2.1.0"
+  }
+}

@@ -1,0 +1,26 @@
+git:
+  quiet: true
+
+os: linux
+
+language: node_js
+
+node_js:
+  - "14"
+  - "12"
+  - "10"
+  - "8"
+
+env:
+  global:
+    - DEBUG=*
+
+install:
+  - npm install
+
+script:
+  - npm test
+
+after_success:
+  - npm run cover:report
+  - "cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js"
