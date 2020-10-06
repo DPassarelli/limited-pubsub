@@ -3,12 +3,11 @@ image: Visual Studio 2017
 version: 1.0.0+{build}
 
 environment:
-  DEBUG: *
+  DEBUG: 'topical-pubsub'
   matrix:
     - node_version: '14'
     - node_version: '12'
     - node_version: '10'
-    - node_version: '8'
 
 matrix:
   fast_finish: true

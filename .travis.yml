@@ -9,11 +9,10 @@ node_js:
   - "14"
   - "12"
   - "10"
-  - "8"
 
 env:
   global:
-    - DEBUG=*
+    - DEBUG=topical-pubsub
 
 install:
   - npm install
