@@ -22,3 +22,4 @@ script:
 
 after_success:
   - npm run cover:report
+  - "cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js"
