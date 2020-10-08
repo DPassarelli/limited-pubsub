@@ -1,5 +1,5 @@
 {
-  "name": "@dpassarelli/topical-pubsub",
+  "name": "@dpassarelli/topico",
   "version": "1.0.0",
   "description": "JS pub/sub implementation that only allows for specific topics to be used.",
   "main": "index.js",
@@ -7,25 +7,30 @@
     "cover:test": "nyc npm run test:unit",
     "cover:report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "standard",
-    "test:unit": "mocha *.spec.js",
+    "test:unit": "mocha",
     "test": "npm run lint && npm run cover:test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DPassarelli/topical-pubsub.git"
+    "url": "git+https://github.com/DPassarelli/topico.git"
   },
   "keywords": [
     "pubsub",
-    "topic"
+    "topic",
+    "async",
+    "message",
+    "publish",
+    "subscribe"
   ],
   "author": "David Passarelli <dpassarelli@camelotcg.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/DPassarelli/topical-pubsub/issues"
+    "url": "https://github.com/DPassarelli/topico/issues"
   },
-  "homepage": "https://github.com/DPassarelli/topical-pubsub#readme",
+  "homepage": "https://github.com/DPassarelli/topico#readme",
   "mocha": {
     "reporter": "min",
+    "file": "test/setup.js",
     "ui": "bdd"
   },
   "standard": {
@@ -58,14 +63,18 @@
     ]
   },
   "devDependencies": {
+    "@sinonjs/fake-timers": "^6.0.1",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "is-plain-obj": "^2.1.0",
+    "lodash.uniq": "^4.5.0",
     "mocha": "^8.1.3",
     "nyc": "^15.1.0",
-    "standard": "^14.3.4",
-    "ulid": "^2.3.0"
+    "standard": "^14.3.4"
   },
   "dependencies": {
     "debug": "^4.2.0",
-    "mitt": "^2.1.0"
+    "mitt": "^2.1.0",
+    "ulid": "^2.3.0"
   }
 }
