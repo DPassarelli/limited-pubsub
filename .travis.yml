@@ -12,7 +12,7 @@ node_js:
 
 env:
   global:
-    - DEBUG=topical-pubsub
+    - DEBUG=topico
 
 install:
   - npm install
@@ -22,4 +22,3 @@ script:
 
 after_success:
   - npm run cover:report
-  - "cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js"

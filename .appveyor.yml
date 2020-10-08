@@ -3,7 +3,7 @@ image: Visual Studio 2017
 version: 1.0.0+{build}
 
 environment:
-  DEBUG: 'topical-pubsub'
+  DEBUG: 'topico'
   matrix:
     - node_version: '14'
     - node_version: '12'
