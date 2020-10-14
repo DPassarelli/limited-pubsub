@@ -63,7 +63,7 @@ The number of milliseconds to wait for a `request` to be fulfilled (see below). 
 
 Adds one or more topics to the enumeration. You can call `addTopic` from anywhere in your code, but a topic can't be referred to before it has been added. As a result, it might be a good idea to add topics near the beginning of your application's entry point.
 
-**Note that all topics are converted into UPPER CASE before being added, and any attempt to add an existing topic will be ignored.**
+**Note that all topics are converted into UPPER CASE before being added, and attempts to add an existing topic more than once will be safely ignored.**
 
 Example:
 
@@ -124,7 +124,7 @@ This method wraps the `say` method, passing along a special payload to all liste
 | Property     | Type     | Purpose |
 |--------------|----------|---------|
 | `trackingNo` | {String} | A unique identifier for this request. When a listener wants to act on this request, it should call the `respond` method with the value of `__trackingNo__` as the first parameter. |
-| `payload`    | {any}    | The second parameter passed into `request`. |
+| `query`    | {any}    | The second parameter passed into `request`. |
 
 The returned promise will be fulfilled with whatever value is passed into `respond` with the same tracking number, otherwise it will be rejected if no response is made within `requestTTL` seconds. This ensures that the promise will resolve one way or another within a definite period of time.
 
@@ -139,9 +139,9 @@ Example:
 ```javascript
 pubsub.addTopic('USER_DATA')
 
-pubsub.listen('USER_DATA', (query) => {
-  if (Object.hasOwnProperty.call(query, 'trackingNo') {
-    // do some action based on query.payload
+pubsub.listen('USER_DATA', (payload) => {
+  if (Object.hasOwnProperty.call(payload, 'trackingNo') {
+    // do some action based on payload.query
     pubsub.respond(query.trackingNo, result)
   }
 })
@@ -152,7 +152,7 @@ pubsub
     // this receives the data passed into `respond`
   })
   .catch((err) => {
-    // you will end up here if `respond` isn't called within 4.2 seconds
+    // you will end up here if `respond` isn't called within `requestTTL` ms (by default, 4200)
     // err.message === 'No response received within the required time limit.'
   })
 ```
