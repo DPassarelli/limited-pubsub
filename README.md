@@ -140,16 +140,16 @@ Example:
 pubsub.addTopic('USER_DATA')
 
 pubsub.listen('USER_DATA', (payload) => {
-  if (Object.hasOwnProperty.call(payload, 'trackingNo') {
+  if (payload.trackingNo) {
     // do some action based on payload.query
-    pubsub.respond(query.trackingNo, result)
+    pubsub.respond(payload.trackingNo, answer)
   }
 })
 
 pubsub
   .request(pubsub.topic.USER_DATA, { foo: bar })
-  .then((result) => {
-    // this receives the data passed into `respond`
+  .then((answer) => {
+    // this receives whatever value was passed into `respond`
   })
   .catch((err) => {
     // you will end up here if `respond` isn't called within `requestTTL` ms (by default, 4200)
