@@ -105,11 +105,11 @@ _Adds a one-time subscription for a particular topic._
 
 Once this function executes, it will be removed, and cannot be called more than once.
 
-#### `listenFor({Symbol}, {any primitive}, {Function})` returns {undefined}
+#### `listenFor({Symbol}, {primitive|RegExp}, {Function})` returns {undefined}
 
-_Adds a subscription for a particular topic that will automatically cancel immediately after the specified [primitive value](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) is received._
+_Adds a subscription for a particular topic that will automatically cancel after the specified [primitive value](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) is received, or that matches the specified regular expression._
 
-This has the same behavior as `listenOnce()`; however, this callback will only be triggered once the specified value is seen.
+This has the same behavior as `listenOnce()`; however, the callback will only be triggered once the specified value is seen (or matched).
 
 #### `cancel({Symbol})` returns {undefined}
 

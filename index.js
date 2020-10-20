@@ -199,13 +199,19 @@ class TopicalPubSub {
 
   /**
    * Adds a subscription for a particular topic that will automatically cancel
-   * immediately after the specified primitive value is received.
+   * immediately after the specified primitive value (or regular expression) is
+   * received (or matched).
    *
    * @param  {Symbol}     topic      One of `TopicalPubSub.prototype.topics`.
    *
-   * @param  {[type]}     value      The primitive value to watch for.
+   * @param  {any}        value      The primitive value to watch for, or a
+   *                                 regular expression to match against.
    *
    * @param  {Function}   callback   The function to call when data is published.
+   *                                 If `value` is a regular expression, then
+   *                                 the callback will receive whatever payload
+   *                                 matched the expression. The callback is
+   *                                 executed asynchronously.
    *
    * @return {undefined}
    */
@@ -229,8 +235,8 @@ class TopicalPubSub {
       'symbol'
     ]
 
-    if (value == null || !~primitives.indexOf(typeof value)) {
-      throw new TypeError('The "value" parameter for "listenFor()" is required and must be a primitive value.')
+    if (value == null || (!~primitives.indexOf(typeof value) && !(value instanceof RegExp))) {
+      throw new TypeError('The "value" parameter for "listenFor()" is required and must be either a primitive value or an instance of RegExp.')
     }
 
     if (typeof callback !== 'function') {
@@ -238,10 +244,19 @@ class TopicalPubSub {
     }
 
     const fn = (payload) => {
-      if (payload === value) {
-        process.nextTick(callback) // let this run async
-        pubsub.off(topicName, fn)
+      let matched = false
+
+      if (value instanceof RegExp && value.test(payload)) {
+        matched = true
+        process.nextTick(() => {
+          callback(payload)
+        })
+      } else if (payload === value) {
+        matched = true
+        process.nextTick(callback)
       }
+
+      if (matched) { pubsub.off(topicName, fn) }
     }
 
     pubsub.on(topicName, fn)

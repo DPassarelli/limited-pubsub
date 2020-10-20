@@ -157,7 +157,7 @@ describe('the "topico" module', function () {
 
     describe('the "listenFor" method', () => {
       const ERR_INVALID_TOPIC = 'The "topic" parameter for "listenFor()" is required and must be a value from "topics".'
-      const ERR_INVALID_VALUE = 'The "value" parameter for "listenFor()" is required and must be a primitive value.'
+      const ERR_INVALID_VALUE = 'The "value" parameter for "listenFor()" is required and must be either a primitive value or an instance of RegExp.'
       const ERR_INVALID_FUNC = 'The "callback" parameter for "listenFor()" is required and must be a function.'
 
       it('must throw an error if the first parameter is missing', () => {
@@ -184,7 +184,7 @@ describe('the "topico" module', function () {
         }).to.throw(TypeError, ERR_INVALID_VALUE)
       })
 
-      it('must throw an error if the second parameter is not a primitive value', () => {
+      it('must throw an error if the second parameter is not a primitive value or regex', () => {
         const invalid = [
           new Date(),
           {},
@@ -358,6 +358,90 @@ describe('the "topico" module', function () {
         T.say(T.topics.INFO, 'foo')
         T.say(T.topics.INFO, 'bar')
         T.say(T.topics.INFO, 'fizz')
+
+        /**
+         * The test results should be analyzed after both words are "said".
+         * Since `say` is asynchronous, the analysis must be as well.
+         */
+        global.setTimeout(() => {
+          try {
+            expect(actual).to.equal(expected)
+            done()
+          } catch (e) {
+            done(e)
+          }
+        }, 10)
+      })
+
+      it('must work with an instance of RegExp', (done) => {
+        const regex = /two/i
+
+        const expected = 1
+        let actual = 0
+
+        T.listenFor(T.topics.INFO, regex, () => {
+          actual++
+        })
+
+        T.say(T.topics.INFO, 'one')
+        T.say(T.topics.INFO, 'two')
+        T.say(T.topics.INFO, 'three')
+
+        /**
+         * The test results should be analyzed after both words are "said".
+         * Since `say` is asynchronous, the analysis must be as well.
+         */
+        global.setTimeout(() => {
+          try {
+            expect(actual).to.equal(expected)
+            done()
+          } catch (e) {
+            done(e)
+          }
+        }, 10)
+      })
+
+      it('must work with an instance of RegExp, if the payload is not a string', (done) => {
+        const regex = /42/i
+
+        const expected = 1
+        let actual = 0
+
+        T.listenFor(T.topics.INFO, regex, () => {
+          actual++
+        })
+
+        T.say(T.topics.INFO, 1337)
+        T.say(T.topics.INFO, 4242)
+        T.say(T.topics.INFO, 2020)
+
+        /**
+         * The test results should be analyzed after both words are "said".
+         * Since `say` is asynchronous, the analysis must be as well.
+         */
+        global.setTimeout(() => {
+          try {
+            expect(actual).to.equal(expected)
+            done()
+          } catch (e) {
+            done(e)
+          }
+        }, 10)
+      })
+
+      it('must return the value that matched the regular expression', (done) => {
+        const regex = /brady/i
+
+        const expected = "here's a song about a man named Brady"
+        let actual = null
+
+        T.listenFor(T.topics.INFO, regex, (data) => {
+          actual = data
+        })
+
+        T.say(T.topics.INFO, 'they somehow formed a family')
+        T.say(T.topics.INFO, "here's a song about a man named Brady")
+        T.say(T.topics.INFO, 'who was raising three boys of his own')
 
         /**
          * The test results should be analyzed after both words are "said".
