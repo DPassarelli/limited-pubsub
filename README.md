@@ -105,6 +105,12 @@ _Adds a one-time subscription for a particular topic._
 
 Once this function executes, it will be removed, and cannot be called more than once.
 
+#### `listenFor({Symbol}, {any primitive}, {Function})` returns {undefined}
+
+_Adds a subscription for a particular topic that will automatically cancel immediately after the specified [primitive value](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) is received._
+
+This has the same behavior as `listenOnce()`; however, this callback will only be triggered once the specified value is seen.
+
 #### `cancel({Symbol})` returns {undefined}
 
 _Removes all registered listeners for the specified topic._

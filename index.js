@@ -198,6 +198,56 @@ class TopicalPubSub {
   }
 
   /**
+   * Adds a subscription for a particular topic that will automatically cancel
+   * immediately after the specified primitive value is received.
+   *
+   * @param  {Symbol}     topic      One of `TopicalPubSub.prototype.topics`.
+   *
+   * @param  {[type]}     value      The primitive value to watch for.
+   *
+   * @param  {Function}   callback   The function to call when data is published.
+   *
+   * @return {undefined}
+   */
+  listenFor (topic, value, callback) {
+    const topicName = validate(topic)
+
+    if (!topicName) {
+      throw new TypeError('The "topic" parameter for "listenFor()" is required and must be a value from "topics".')
+    }
+
+    /**
+     * A list of all primitive value types. Found at
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures
+     * @type {Array}
+     */
+    const primitives = [
+      'boolean',
+      'number',
+      'string',
+      'bigint',
+      'symbol'
+    ]
+
+    if (value == null || !~primitives.indexOf(typeof value)) {
+      throw new TypeError('The "value" parameter for "listenFor()" is required and must be a primitive value.')
+    }
+
+    if (typeof callback !== 'function') {
+      throw new TypeError('The "callback" parameter for "listenFor()" is required and must be a function.')
+    }
+
+    const fn = (payload) => {
+      if (payload === value) {
+        process.nextTick(callback) // let this run async
+        pubsub.off(topicName, fn)
+      }
+    }
+
+    pubsub.on(topicName, fn)
+  }
+
+  /**
    * Publishes data for a particular topic. All subscribers will be notified.
    *
    * @param  {Symbol}      topic   One of `TopicalPubSub.prototype.topics`.

@@ -148,6 +148,71 @@ describe('the "topico" module', function () {
       })
     })
 
+    it('must have a method called "listenFor"', () => {
+      const expected = 'function'
+      const actual = typeof T.listenFor
+
+      expect(actual).to.equal(expected)
+    })
+
+    describe('the "listenFor" method', () => {
+      const ERR_INVALID_TOPIC = 'The "topic" parameter for "listenFor()" is required and must be a value from "topics".'
+      const ERR_INVALID_VALUE = 'The "value" parameter for "listenFor()" is required and must be a primitive value.'
+      const ERR_INVALID_FUNC = 'The "callback" parameter for "listenFor()" is required and must be a function.'
+
+      it('must throw an error if the first parameter is missing', () => {
+        expect(() => {
+          T.listenFor()
+        }).to.throw(TypeError, ERR_INVALID_TOPIC)
+      })
+
+      it('must throw an error if the first parameter is not a member of ".topics"', () => {
+        expect(() => {
+          T.listenFor('topic')
+        }).to.throw(TypeError, ERR_INVALID_TOPIC)
+      })
+
+      it('must throw an error if the second parameter is missing', () => {
+        expect(() => {
+          T.listenFor(T.topics.INFO)
+        }).to.throw(TypeError, ERR_INVALID_VALUE)
+      })
+
+      it('must throw an error if the second parameter is null', () => {
+        expect(() => {
+          T.listenFor(T.topics.INFO, null)
+        }).to.throw(TypeError, ERR_INVALID_VALUE)
+      })
+
+      it('must throw an error if the second parameter is not a primitive value', () => {
+        const invalid = [
+          new Date(),
+          {},
+          [],
+          () => { /* no-op */ },
+          new Map()
+        ]
+
+        invalid.forEach((val) => {
+          expect(() => {
+            T.listenFor(T.topics.INFO, val)
+          }).to.throw(TypeError, ERR_INVALID_VALUE)
+        })
+      })
+
+      it('must throw an error if the third parameter is missing', () => {
+        expect(() => {
+          T.listenFor(T.topics.INFO, 'test')
+        }).to.throw(TypeError, ERR_INVALID_FUNC)
+      })
+
+      it('must throw an error if the third parameter is not a function', () => {
+        expect(() => {
+          T.listenFor(T.topics.INFO, 'test', 'callback')
+        }).to.throw(TypeError, ERR_INVALID_FUNC)
+      })
+    })
+
     it('must have a method called "say"', () => {
       const expected = 'function'
       const actual = typeof T.say
@@ -219,6 +284,88 @@ describe('the "topico" module', function () {
         global.setTimeout(() => {
           try {
             expect(actual).to.deep.equal(expected)
+            done()
+          } catch (e) {
+            done(e)
+          }
+        }, 10)
+      })
+    })
+
+    describe('the "listenFor" and "say" behavior', () => {
+      it('must trigger the former after calling the latter', (done) => {
+        T.listenFor(T.topics.INFO, 'fizz!', done)
+        T.say(T.topics.INFO, 'fizz!')
+      })
+
+      it('must work with Boolean data type', (done) => {
+        T.listenFor(T.topics.INFO, true, done)
+        T.say(T.topics.INFO, true)
+      })
+
+      it('must work with Number data type', (done) => {
+        T.listenFor(T.topics.INFO, 42, done)
+        T.say(T.topics.INFO, 42)
+      })
+
+      it('must work with BigInt data type', (done) => {
+        const bigint = global.BigInt('0x1fffffffffffff')
+
+        T.listenFor(T.topics.INFO, bigint, done)
+        T.say(T.topics.INFO, bigint)
+      })
+
+      it('must work with Symbol data type', (done) => {
+        const symbol = Symbol('TEST')
+
+        T.listenFor(T.topics.INFO, symbol, done)
+        T.say(T.topics.INFO, symbol)
+      })
+
+      it('must not be triggered more than once', (done) => {
+        const expected = 1
+        let actual = 0
+
+        T.listenFor(T.topics.INFO, 'fizz', () => {
+          actual++
+        })
+
+        T.say(T.topics.INFO, 'fizz')
+        T.say(T.topics.INFO, 'fizz')
+
+        /**
+         * The test results should be analyzed after both words are "said".
+         * Since `say` is asynchronous, the analysis must be as well.
+         */
+        global.setTimeout(() => {
+          try {
+            expect(actual).to.equal(expected)
+            done()
+          } catch (e) {
+            done(e)
+          }
+        }, 10)
+      })
+
+      it('must be triggered even if other values are published beforehand', (done) => {
+        const expected = 1
+        let actual = 0
+
+        T.listenFor(T.topics.INFO, 'fizz', () => {
+          actual++
+        })
+
+        T.say(T.topics.INFO, 'foo')
+        T.say(T.topics.INFO, 'bar')
+        T.say(T.topics.INFO, 'fizz')
+
+        /**
+         * The test results should be analyzed after both words are "said".
+         * Since `say` is asynchronous, the analysis must be as well.
+         */
+        global.setTimeout(() => {
+          try {
+            expect(actual).to.equal(expected)
             done()
           } catch (e) {
             done(e)
